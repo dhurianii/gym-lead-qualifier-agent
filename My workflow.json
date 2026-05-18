@@ -1,0 +1,514 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gym-lead",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "83deff93-287c-472f-8261-54a5f44ef9dd",
+      "name": "Webhook",
+      "webhookId": "45663a93-203b-4a27-adde-ef036822a1b3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization ",
+              "value": "Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "HTTP-Referer",
+              "value": "https://gymleads.com"
+            },
+            {
+              "name": "X-Tittle",
+              "value": "Gym Lead Qualifier"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"openai/gpt-4o-mini\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a gym lead qualification assistant. Classify the lead as Hot, Warm, or Cold.\\n\\nHot Lead: timeline is today/within 3 days/within 7 days AND budget is 2000-3000 or more than 2000 AND location is powai/vikhroli/kanjurmarg\\n\\nWarm Lead: Interested but missing ONE Hot condition\\n\\nCold Lead: Low budget OR not starting soon OR outside location\\n\\nReply ONLY in this exact JSON format:\\n{\\\"qualification\\\": \\\"Hot\\\", \\\"reason\\\": \\\"your reason here\\\"}\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"Name: {{ $json.name }}\\nTimeline: {{ $json.timeline }}\\nMonthly Budget: {{ $json.budget }}\\nLocation: {{ $json.location }}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        528,
+        0
+      ],
+      "id": "41264f88-6a2e-4bfa-a297-a8faba565ca9",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first().json;\n\n// Parse AI response\nconst aiRaw = item.choices[0].message.content;\nconst aiResult = JSON.parse(aiRaw);\n\nreturn [{\n  json: {\n    name: item['name '] || item['name'],\n    email: item['email '] || item['email'],\n    phone: item['phone '] || item['phone'],\n    timeline: item['Timeline'] || item['timeline'],\n    budget: item['Budget'] || item['budget'],\n    location: item['location'],\n    submittedAt: item['submittedAt'],\n    qualification: aiResult.qualification,\n    reason: aiResult.reason\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        0
+      ],
+      "id": "105f3119-4d9b-4c04-b74f-64d0b2601fbe",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HI8wbfZO9oMXBw34XP-sm57_FJiOxVahk5HfkkYKjDI",
+          "mode": "list",
+          "cachedResultName": "Gym lead ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HI8wbfZO9oMXBw34XP-sm57_FJiOxVahk5HfkkYKjDI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HI8wbfZO9oMXBw34XP-sm57_FJiOxVahk5HfkkYKjDI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {
+            "email": "={{$json.email}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "name ",
+              "displayName": "name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phone",
+              "displayName": "phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "fitness_goal",
+              "displayName": "fitness_goal",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "start_timeline",
+              "displayName": "start_timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "monthly_budget",
+              "displayName": "monthly_budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "preferred_location ",
+              "displayName": "preferred_location ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "notes",
+              "displayName": "notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "score",
+              "displayName": "score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "status",
+              "displayName": "status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reasoning",
+              "displayName": "reasoning",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "location",
+              "displayName": "location",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "submittedAt",
+              "displayName": "submittedAt",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "qualification",
+              "displayName": "qualification",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "reason",
+              "displayName": "reason",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        240
+      ],
+      "id": "7a218dff-07bd-4dd2-9afb-a0ac8b16b1d4",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "IBFVcVISDHrzwJqQ",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "6cc985b4-5064-4d58-811a-6779a2219e19",
+              "leftValue": "={{ $json.qualification }}",
+              "rightValue": "Cold",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1104,
+        240
+      ],
+      "id": "a79d697e-84d2-4916-97e9-05e5f4bf1973",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "codeartist.in@gmail.com",
+        "subject": "={{ $json.qualification === 'Hot' ? '🔥 Hot Lead' : '🟡 Warm Lead' }} - {{ $json.name }}",
+        "emailType": "text",
+        "message": "=New Lead Alert!\n\n👤 Name: {{ $json.name }}\n📧 Email: {{ $json.email }}\n📱 Phone: {{ $json.phone }}\n\n⏰ Start Timeline: {{ $json.timeline }}\n💰 Monthly Budget: {{ $json.budget }}\n📍 Location: {{ $json.location }}\n\n🏷️ Qualification: {{ $json.qualification }}\n💡 Reason: {{ $json.reason }}\n\n📅 Submitted: {{ $json.submittedAt }}\n\n---\nReply to this email or call them within 1 hour for best conversion!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        1312,
+        144
+      ],
+      "id": "9bf0c9a0-49bc-41db-a5fe-3d7191d0da9a",
+      "name": "Send a message",
+      "webhookId": "737d4e3a-1f2c-44ca-a1b0-6b48e85c4c3a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "9CtlAYK4eYNPGzFQ",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f4611935-9eda-4790-9d75-8448c1a7c51f",
+              "name": "name ",
+              "value": "={{ $json.body.data.fields[0].value }}",
+              "type": "string"
+            },
+            {
+              "id": "29ce11ab-7e57-421c-b79b-bdf3252ff25f",
+              "name": "email ",
+              "value": "={{ $json.body.data.fields[1].value }}",
+              "type": "string"
+            },
+            {
+              "id": "0769dd57-a611-419b-8bff-b5ac77c2af75",
+              "name": "phone ",
+              "value": "={{ $json.body.data.fields[2].value }}",
+              "type": "string"
+            },
+            {
+              "id": "bf0f7238-c922-4b1d-8975-2cbc282d1832",
+              "name": "timeline ",
+              "value": "={{ $json.body.data.fields[3].options.filter(o => o.id == $json.body.data.fields[3].value[0])[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "540a339b-59fe-425f-80e8-3a5c491ea2ec",
+              "name": "budget",
+              "value": "={{ $json.body.data.fields[4].options.filter(o => o.id == $json.body.data.fields[4].value[0])[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "9fab4323-8338-4f63-8ce8-a6825807afef",
+              "name": "location",
+              "value": "={{ $json.body.data.fields[5].options.filter(o => o.id == $json.body.data.fields[5].value[0])[0].text }}",
+              "type": "string"
+            },
+            {
+              "id": "b700560c-0e99-4e67-9628-da7b7ff7ad3f",
+              "name": "submittedAt",
+              "value": "={{ $json.body.data.fields[5].options.filter(o => o.id == $json.body.data.fields[5].value[0])[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        0
+      ],
+      "id": "523a67b0-b788-4248-b117-60b7809febee",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        816,
+        -128
+      ],
+      "id": "652d38ec-b8bf-4398-b3c2-cdc8fea5c77e",
+      "name": "Merge"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "548caca7-ff19-48de-8931-73d84cd199ac",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3ae96e50518e5fc46bf9aad26f71f5ddd6ea1717732ceb4557995f3377c16855"
+  },
+  "id": "FzAwA6ByjTkAYoeh",
+  "tags": []
+}
